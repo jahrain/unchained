@@ -139,9 +139,11 @@ class JSONField(six.with_metaclass(models.SubfieldBase, models.TextField)):
 
     def db_type(self, connection):
         # JSON type only available in PostgreSQL >=9.2
-        if (connection.vendor == 'postgresql' and 
-            connection.pg_version >= 90200) :
-            return 'json'
+        if connection.vendor == 'postgresql': 
+            if connection.pg_version >= 90400:
+                return 'jsonb'
+            elif connection.pg_version >= 90200:
+                return 'json'
         return 'text'
 
     def to_python(self, value):
